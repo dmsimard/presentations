@@ -1,0 +1,620 @@
+<!doctype html>
+<html lang="en">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=1024" />
+    <meta name="apple-mobile-web-app-capable" content="yes" />
+    <title>Ceph 101 @ Openstack Meetup MTL</title>
+
+    <meta name="description" content="Ceph 101 on impress.js for Openstack Meetup MTL" />
+    <meta name="author" content="David Moreau Simard" />
+
+    <link href="http://fonts.googleapis.com/css?family=Open+Sans:regular,semibold,italic,italicsemibold|PT+Sans:400,700,400italic,700italic|PT+Serif:400,700,400italic,700italic" rel="stylesheet" />
+    <link href="impress_js/css/impress.css" rel="stylesheet" />
+    <link href="bootstrap/css/bootstrap.min.css" rel="stylesheet" />
+    
+    <link rel="shortcut icon" href="favicon.png" />
+
+    <style>
+        body {
+          text-align: center;
+          background: #f0f0f2; /* Old browsers */
+        }
+
+        .step {
+            text-align: center;
+        }
+
+        table.spec th {
+            font-size: 55%;
+            font-weight: bold;
+            text-align: center;
+        }
+
+        table.spec td {
+            font-size: 50%;
+            text-align: center;
+        }
+
+        pre {
+            font-size: 60%;
+        }
+
+        small {
+            font-size: 65%;
+        }
+    </style>
+</head>
+
+<body class="impress-not-supported">
+
+<div class="fallback-message">
+    <p>Your browser <b>doesn't support the features required</b> by impress.js, so you are presented with a simplified version of this presentation.</p>
+    <p>For the best experience please use the latest <b>Chrome</b>, <b>Safari</b> or <b>Firefox</b> browser.</p>
+</div>
+
+<div id="impress" >
+    <div class="step slide" data-x="0" data-y="0" data-scale="2">
+        <div class="row">
+            <div class="col-md-6 text-left">
+                <img src="images/logo_small.png"></img><img src="images/openstack_mtl_logo.png" align="right"></img>
+                <br>
+                <br>
+                <img src="images/ceph-openstack.png"></img>
+            </div>
+            <div class="col-md-6 text-right">
+                <h1>Ceph 101 (+Openstack!)</h1>
+                <br>
+                <br>
+                <br>
+                <h2>Unified storage:</h2>
+                <h3>
+                    Block Storage<br>
+                    Images<br>
+                    Objects<br>
+                    Shared Filesystem<br>
+                </h3>
+            </div>
+        </div>
+        <br>
+        <div class="row">
+            <div class="col-md-12">
+                Montreal Openstack Meetup<br>
+                March 17th 2014 @ UQAM
+            </div>
+        </div>
+    </div>
+
+    <div class="step" data-x="0" data-y="-2000" data-scale="2" >
+        <div class="row text-left">
+            <pre>root:~# whoami</pre>
+        </div>
+        <div class="row">
+            David Moreau Simard<br>
+            dmsimard@iweb.com<br>
+            <br>
+            <small>IT Architecture Specialist @ iWeb</small><br>
+            <small>Openstack, Ceph, Swift, Puppet, Xenserver</small><br>
+            <small>High availability web/database clusters</small><br>
+            <small><3 Python</small>
+        </div>
+    </div>
+
+    <div class="step" data-x="0" data-y="2000" data-scale="1" >
+        <div class="row">
+            <strong>What is Ceph ?</strong>
+        </div>
+    </div>
+
+    <div class="step slide" data-x="1500" data-y="2000" data-scale="1">
+        <div class="row">
+            <br>
+            <img src="images/ceph_logo.png"></img>
+            <br>
+            <br>
+            "<i>Ceph is a distributed object store and file system designed to provide excellent performance, reliability and scalability.</i>"
+        </div>
+        <div class="row text-right">
+            <strong>Ceph.com</strong>
+        </div>
+        <br>
+        <br>
+        <div class="row">
+            <small><strong>Ceph</strong> was created by <strong>Sage Weil</strong> as part of a Ph.D thesis in Computer Science.</small><br>
+            <small>Sage Weil co-founded Dreamhost and also founded Inktank, the company today behind Ceph.</small><br>
+            <br>
+            <img src="images/gsoc2014.png"></img>
+        </div>
+    </div>
+
+    <div class="step" data-x="1500" data-y="4000" data-scale="1" >
+        <div class="row">
+            <strong>Distributed storage ?</strong>
+        </div>
+    </div>
+
+    <div class="step" data-x="3000" data-y="4000" data-scale="1">
+        <div class="row">
+            <strong>Your laptop</strong>
+        </div>
+        <div class="row">
+            <img src="images/distributed1.png"></img>
+        </div>
+    </div>
+
+    <div class="step" data-x="4500" data-y="4000" data-scale="1">
+        <div class="row">
+            <strong>A small business</strong>
+        </div>
+        <div class="row">
+            <img src="images/distributed2.png"></img>
+        </div>
+    </div>
+
+    <div class="step" data-x="6000" data-y="4000" data-scale="1">
+        <div class="row">
+            <strong>A (growing) small business</strong>
+        </div>
+        <div class="row">
+            <img src="images/distributed3.png"></img>
+        </div>
+    </div>
+
+    <div class="step" data-x="7500" data-y="4000" data-scale="1">
+        <div class="row">
+            <strong>More servers ?</strong>
+        </div>
+    </div>
+
+    <div class="step" data-x="9000" data-y="4000" data-scale="1">
+        <div class="row">
+            <img src="images/distributed4.png"></img>
+        </div>
+    </div>
+
+    <div class="step" data-x="11500" data-y="4000" data-scale="1">
+        <div class="row">
+            <strong>A SAN ?</strong>
+        </div>
+    </div>
+
+    <div class="step" data-x="13000" data-y="4000" data-scale="1">
+        <div class="row">
+            <img src="images/distributed5.png"></img>
+        </div>
+    </div>
+
+    <div class="step" data-x="14500" data-y="4000" data-scale="1">
+        <div class="row">
+            <strong>A SAN is expensive.</strong>
+        </div>
+        <div class="row">
+            <small>Expensive hardware<br>
+            Expensive licenses<br>
+            Expensive support<br>
+            Proprietary software (& hardware)<br>
+            Vendor lock-in<br></small>
+        </div>
+    </div>
+
+    <div class="step" data-x="1500" data-y="6000" data-scale="1">
+        <div class="row">
+            <strong>Ceph</strong>
+        </div>
+        <div class="row">
+            <small>Built to run on commodity hardware<br>
+            Free<br>
+            Open source<br>
+            Awesome.<br>
+            </small>
+        </div>
+    </div>
+
+    <div class="step" data-x="7500" data-y="6000" data-scale="1">
+        <div class="row">
+            <strong>The Ceph software stack</strong>
+        </div>
+    </div>
+
+    <div class="step slide" data-x="9000" data-y="6000" data-scale="1">
+        <br>
+        <br>
+        <br>
+        <div class="row">
+            <img src="images/stack.png"></img>
+        </div>
+    </div>
+
+    <div class="step" data-x="9000" data-y="8000" data-scale="1">
+        <div class="row">
+            <strong>The Ceph daemons</strong>
+        </div>
+    </div>
+
+    <div class="step" data-x="11000" data-y="8000" data-scale="1" style="width:1600px;">
+        <div class="row text-left">
+            <table>
+                <tr>
+                    <td class="text-center">
+                        <strong>OSD</strong><br>
+                        <img src="images/osd.png"></img>
+                    </td>
+                    <td style="padding-left: 50px;">
+                        <b>O</b>bject <b>S</b>torage <b>D</b>aemon
+                        <ul>
+                            <li>One OSD per disk</li>
+                            <li>One server: Many disks (wow)</li>
+                            <li>Heterogenous hardware</li>
+                            <li>10.. 100.. 1000+ OSDs</li>
+                            <li>Serves data to clients directly</li>
+                            <li>Intelligent peering & replication between OSDs</li>
+                        </ul>
+                    </td>
+                    <td style="vertical-align: middle;">
+                        <img src="images/cluster_map.png"></img>
+                    </td>
+                </tr>
+            </table>
+        </div>
+    </div>
+
+    <div class="step" data-x="13500" data-y="8000" data-scale="1">
+        <div class="row text-left">
+            <table>
+                <tr>
+                    <td>&nbsp;</td> <!-- spacer -->
+                </tr>
+                <tr>
+                    <td class="text-center">
+                        <strong>Mon</strong><br>
+                        <img src="images/monitor.png"></img>
+                    </td>
+                    <td style="padding-left: 50px;">
+                        <b>Mon</b>itor
+                        <ul>
+                            <li>Small, odd number (1, 3, 5..)</li>
+                            <li>Maintains the cluster's state:</li>
+                            <ul style="padding-left: 30px;">
+                                <li><small>Cluster members</small></li>
+                                <li><small>Placement groups, objects</small></li>
+                                <li><small>The CRUSH map</small></li>
+                            </ul>
+                            <li>Entry point for Ceph clients</li>
+                        </ul>
+                    </td>
+                </tr>
+            </table>
+        </div>
+    </div>
+
+    <div class="step" data-x="15000" data-y="8000" data-scale="1">
+        <div class="row">
+            <small><i>Only used for CephFS, the shared and distributed filesystem</i></small><br>
+            <small><span class="label label-warning">Not production ready</span></small>
+        </div>
+        <div class="row text-left">
+            <table>
+                <tr>
+                    <td class="text-center">
+                        <strong>MDS</strong><br>
+                        <img src="images/mds.png"></img>
+                    </td>
+                    <td style="padding-left: 50px;">
+                        <b>M</b>eta <b>D</b>ata <b>S</b>erver
+                        <ul>
+                            <li>Manages filesystem metadata</li>
+                                <ul style="padding-left: 30px;">
+                                    <li><small>Folder and file hierarchy</small></li>
+                                    <li><small>Ownership, permissions, timestamps, etc.</small></li>
+                                </ul>
+                            <li>Scalable:</li>
+                                <ul style="padding-left: 30px;">
+                                    <li><small>Metadata is stored in RADOS</small></li>
+                                    <li><small>Active/Active</small></li>
+                                    <li><small>Dynamic subtree partition</small></li>
+                                </ul>
+                        </ul>
+                    </td>
+                </tr>
+            </table>
+        </div>
+    </div>
+
+    <div class="step" data-x="16500" data-y="8000" data-scale="1">
+        <div class="row text-left">
+            <table>
+                <tr>
+                    <td class="text-center">
+                        <strong>RGW</strong><br>
+                        <img src="images/rgw.png"></img>
+                    </td>
+                    <td style="padding-left: 50px;">
+                        <b>R</b>ados <b>G</b>ate<b>w</b>ay
+                        <ul>
+                            <li>REST-based interface to RADOS</li>
+                            <li>Compatible with Amazon S3 and Swift APIs</li>
+                        </ul>
+                    </td>
+                </tr>
+            </table>
+        </div>
+    </div>
+
+    <div class="step" data-x="16500" data-y="10000" data-scale="1">
+        <div class="row">
+            Cool enough already, right ?<br>
+            What makes <strong>Ceph</strong> <u>really</u> unique ?
+        </div>
+    </div>
+
+    <div class="step" data-x="18000" data-y="10000" data-scale="1">
+        <div class="row">
+            <strong>CRUSH</strong><br>
+            <small><i><b>C</b>ontrolled <b>R</b>eplication <b>U</b>nder <b>S</b>calable <b>H</b>ashing</i></small>
+        </div>
+    </div>
+
+    <div class="step" data-x="19500" data-y="10000" data-scale="1">
+        <div class="row text-left">
+            <table>
+                <tr>
+                    <td class="text-center">
+                        <strong>CRUSH</strong><br>
+                        <img src="images/crush.png"></img>
+                    </td>
+                    <td style="padding-left: 50px;">
+                        <br>
+                        <ul>
+                            <li>Pseudo-random placement</li>
+                            <li>Client-side calculations</li>
+                            <li>Uniform distribution</li>
+                            <li>Stable</li>
+                            <li>Configurable
+                                <ul style="padding-left: 30px;">
+                                    <li><small>Infrastructure topology aware</small></li>
+                                    <li><small>Replication</small></li>
+                                    <li><small>Weight (Ex: SATA vs SAS vs SSD)</small></li>
+                                </ul>
+                            </li>
+                        </ul>
+                    </td>
+                </tr>
+            </table>
+        </div>
+    </div>
+
+    <div class="step" data-x="19500" data-y="12000" data-scale="1">
+        <div class="row">
+            <strong>How CRUSH distributes data in Ceph</strong>
+        </div>
+    </div>
+
+    <div class="step" data-x="21000" data-y="12000" data-scale="1">
+        <div class="row">
+            <strong>Pools</strong>
+        </div>
+        <div class="row">
+            <small>Logical container for your data<br>
+            Contains placement groups<br>
+            Images (ex: RBD) reside in pools<br>
+            Images are striped across placement groups<br>
+            Replication configured per-pool<br>
+            Custom CRUSH rules</small>
+        </div>
+    </div>
+
+    <div class="step" data-x="22500" data-y="12000" data-scale="1">
+        <div class="row">
+            <strong>Placement groups</strong>
+        </div>
+        <div class="row">
+            <small>Objects are stored in placement groups<br>
+            Objects aren't replicated, placement groups are<br>
+            Rule of thumb: 100 PGs per OSD<br>
+            More PGs: better data distribution<br>
+            The more PGs, the more CPU intensive it becomes</small>
+        </div>
+    </div>
+
+    <div class="step" data-x="24000" data-y="12000" data-scale="1">
+        <div class="row">
+            <img src="images/data_placement.png"></img>
+        </div>
+    </div>
+
+    <div class="step" data-x="24000" data-y="14000" data-scale="1">
+        <div class="row">
+            <strong>What if you lose an OSD ?</strong>
+        </div>
+    </div>
+
+    <div class="step" data-x="25500" data-y="14000" data-scale="1">
+        <div class="row">
+            <img src="images/data_loss_1.png"></img>
+        </div>
+    </div>
+
+    <div class="step" data-x="27000" data-y="14000" data-scale="1">
+        <div class="row">
+            <img src="images/data_loss_1.png"></img>
+        </div>
+        <div class="row">
+            <img src="images/data_loss_2.png"></img>
+        </div>
+    </div>
+
+    <div class="step" data-x="27000" data-y="16000" data-scale="1">
+        <div class="row">
+            <strong>Let's talk $$$</strong><br>
+            <small>A real life scenario</small>
+        </div>
+    </div>
+
+    <div class="step slide" data-x="28500" data-y="16000" data-scale="1">
+        <i>Server specifications for a typical storage server</i><br>
+        <br>
+        <table class="table table-responsive spec">
+            <tbody>
+                <tr>
+                    <td style="border-top: none;">Supermicro Rackmount 3U, 16x 3.5"</td>
+                </tr>
+                <tr>
+                    <td>Supermicro Motherboard X9DRH-iTF</td>
+                </tr>
+                <tr>
+                    <td>2x Intel Xeon CPU E52620 (24 cores @ 2.0GHz)</td>
+                </tr>
+                <tr>
+                    <td>8x 8GB RAM DDR3 ECC 1600MHz (64GB)</td>
+                </tr>
+                <tr>
+                    <td>16x Western Digital RE4 SATA 4TB</td>
+                </tr>
+                <tr>
+                    <td>1x LSI HW RAID 9266-8i</td>
+                </tr>
+                <tr>
+                    <td>1x LSI BBU</td>
+                </tr>
+                <tr>
+                    <td colspan="2" style="text-align: right !important;">
+                        <strong>~ 9,300.00 $</strong>
+                    </td>
+                </tr>
+            </tbody>
+        </table>
+        <small>Consider two of these servers for DRBD active/passive high-availability: ~18,600.00$</small><br>
+        <br>
+        <table class="table table-responsive spec">
+            <tbody>
+                <tr>
+                    <th></th>
+                    <th>Minimum usable storage</th>
+                    <th>Maximum usable storage</th>
+                    <th>$/GB minimum</th>
+                    <th>$/GB maximum</th>
+                </tr>
+                <tr>
+                    <td><strong>DRBD</strong></td>
+                    <td>~32768 GB RAID-10</td>
+                    <td>~57344 GB RAID-50</td>
+                    <td>0.324$ RAID-50</td>
+                    <td>0.567$ RAID-10</td>
+                </tr>
+                <tr>
+                    <td><strong>Ceph</strong></td>
+                    <td>43690 GB 3 replicas</td>
+                    <td>65536 GB 2 replicas</td>
+                    <td>0.283$ 2 replicas</td>
+                    <td>0.425$ 3 replicas</td>
+                </tr>
+            </tbody>
+        </table>
+    </div>
+
+    <div class="step" data-x="28500" data-y="18000" data-scale="1" >
+        <div class="row">
+            <strong>Ceph with Openstack ?</strong>
+        </div>
+    </div>
+
+    <div class="step" data-x="31000" data-y="18000" data-scale="1">
+        <div class="row">
+            <strong>Block Storage</strong>
+        </div>
+        <div class="row">
+            Integrated with <strong>Cinder</strong> and <strong>Nova</strong>.<br>
+            <small>Similar to iSCSI, but better :D</small><br>
+            <small>RBD is ontegrated in the kernel since 2.6.34 (May 2010)</small>
+        </div>
+        <div class="row text-left">
+            <small><pre class="text-left">
+~# modprobe rbd
+~# rbd map mydiskimage --pool mypool --name client.admin -m mon01.ceph
+~# mkfs.ext4 /dev/rbd/mypool/mydiskimage
+~# mount /dev/rbd/mypool/mydiskimage /mnt</pre></small>
+        </div>
+    </div>
+
+    <div class="step" data-x="32500" data-y="18000" data-scale="1">
+        <div class="row">
+            <strong>Images</strong>
+        </div>
+        <div class="row">
+            Integrated with <strong>Glance</strong>.<br>
+            <small>Store your images directly in Ceph !</small>
+        </div>
+    </div>
+
+    <div class="step" data-x="34000" data-y="18000" data-scale="1">
+        <div class="row">
+            <strong>Object Storage</strong>
+        </div>
+        <div class="row">
+            Alternative to <strong>Swift</strong> in Openstack.<br>
+            <small>Compatible API with Swift and Amazon S3.</small>
+        </div>
+    </div>
+
+    <div class="step" data-x="35500" data-y="18000" data-scale="1">
+        <div class="row">
+            <strong>Shared and Distributed Filesystem</strong>
+        </div>
+        <div class="row">
+            <strong>CephFS</strong><br>
+            Alternative to GlusterFS, OCFS, etc.<br>
+            <small>POSIX-Compliant</small><br>
+            <small>Either kernel client or FUSE</small><br>
+            <small>Soon.</small><br>
+            :(
+        </div>
+    </div>
+
+    <div class="step" data-x="35500" data-y="20000" data-scale="1">
+        <div class="row">
+            <strong>Who uses Ceph ?</strong>
+        </div>
+    </div>
+
+    <div class="step" data-x="37000" data-y="20000" data-scale="1">
+        <div class="row">
+            <img src="images/ceph_users.png"></img>
+        </div>
+        <div>
+            <small style="font-size:25%;"><sup>*</sup> Logos trademark and copyright to their respective owners</small>
+        </div>
+    </div>
+
+    <div class="step slide" data-x="31000" data-y="20000" data-scale="1">
+        <div class="row">
+            <strong>Questions ?</strong>
+        </div>
+        <br>
+        <div class="row">
+            <small>This presentation is built in HTML5/CSS/JS with impress.js and is available on Github.</small><br>
+            http://bit.ly/ceph-101-mtl
+        </div>
+        <br>
+        <br>
+        <div class="row">
+            <strong>Follow me:</strong><br>
+            <small><strong>Blog</strong>: http://dmsimard.com</small><br>
+            <small><strong>Twitter</strong>: http://twitter.com/dmsimard</small><br>
+            <br>
+            <strong>Follow iWeb:</strong><br>
+            <small><strong>Blog</strong>: http://blog.iweb.com</small><br>
+            <small><strong>Twitter</strong>: http://twitter.com/iweb</small>
+        </div>
+        <br>
+        <div class="row">
+            <strong>Credits</strong><br>
+            Inktank for schemas, icons, logos & customer list<br>
+        </div>
+    </div>
+
+</div>
+
+<script src="impress_js/js/impress.js"></script>
+<script>impress().init();</script>
+</body>
+</html>
