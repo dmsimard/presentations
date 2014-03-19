@@ -15,3 +15,5 @@ __To view presentation__:
 git clone the repository, open the index.html in the presentation folder in any modern browser.
 
 Use left and right arrows to navigate.
+
+_Best viewed in 1080p resolution._
