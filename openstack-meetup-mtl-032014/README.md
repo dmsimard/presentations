@@ -1,5 +1,5 @@
 Ceph 101 (+Openstack!)
-============
+======================
 
 For Openstack Montreal Meetup, March 17th 2014
 
@@ -17,3 +17,8 @@ git clone the repository, open the index.html in the presentation folder in any 
 Use left and right arrows to navigate.
 
 _Best viewed in 1080p resolution._
+
+
+Available on Youtube
+--------------------
+https://www.youtube.com/watch?v=wqo16zVS8U4
