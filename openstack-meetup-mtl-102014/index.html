@@ -1,0 +1,526 @@
+<!doctype html>
+<html lang="en">
+
+	<head>
+		<meta charset="utf-8">
+
+		<title>Openstack Meetup Montreal - October 2014</title>
+
+		<meta name="description" content="A presentatio for Montreal's Openstack Meetup">
+		<meta name="author" content="David Moreau Simard">
+
+		<meta name="apple-mobile-web-app-capable" content="yes" />
+		<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+
+		<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+
+		<link rel="stylesheet" href="css/reveal.min.css">
+		<link rel="stylesheet" href="css/theme/moon.css" id="theme">
+
+		<!-- For syntax highlighting -->
+		<link rel="stylesheet" href="lib/css/zenburn.css">-
+
+		<!-- If the query includes 'print-pdf', include the PDF print sheet -->
+		<script>
+			if( window.location.search.match( /print-pdf/gi ) ) {
+				var link = document.createElement( 'link' );
+				link.rel = 'stylesheet';
+				link.type = 'text/css';
+				link.href = 'css/print/pdf.css';
+				document.getElementsByTagName( 'head' )[0].appendChild( link );
+			}
+		</script>
+
+		<style>
+		body {
+			background-color: #333333;
+		}
+
+		.reveal section img { background:none; border:none; box-shadow:none; }
+		</style>
+
+		<!--[if lt IE 9]>
+		<script src="lib/js/html5shiv.js"></script>
+		<![endif]-->
+	</head>
+
+	<body>
+
+		<div class="reveal">
+
+			<!-- Any section element inside of this container is displayed as a slide -->
+			<div class="slides">
+				<section data-background="images/SwiftOutline.png" data-background-size="40%" data-background-position="right top">
+					<h2>Openstack Montreal</h2>
+					<h3>Openstack Swift object storage</h3>
+					<p>Use cases with Duplicity and S3QL</p>
+					<br>
+					<p><small>October 2014 @ UQAM</small></p>
+					<img class="logo" src="images/openstack_mtl_logo.png" alt="Openstack Montreal Logo" id="openstack_mtl_logo">
+					<img class="logo" src="images/iweblogo.png" alt="iWeb Logo" id="iweb_logo">
+				</section>
+
+				<section>
+					<h1>Hi !</h1>
+					<p>I'm David Moreau Simard</p>
+					<p><small>IT Architecture Specialist @ iWeb, an Internap Company</small></p>
+					<br>
+					<p>Openstack, Ceph, Swift, Puppet, Xenserver</p>
+					<p>High availability web/database clusters</p>
+					<p><3 Python</p>
+				</section>
+
+				<section>
+					<section>
+						<h2>Who uses Object storage ?</h2>
+					</section>
+					<section>
+						<p>Object storage is not reserved for hackers anymore...</p>
+						<img src="images/users.gif">
+					</section>
+					<section>
+						<h2>Who uses object storage ?</h2>
+						<p class="fragment rollin">My mother uses it.</p>
+						<p class="fragment rollin">I use it.</p>
+						<p class="fragment rollin">My kids use it.</p>
+						<p class="fragment rollin">You too.</p>
+						<p class="fragment rollin">..probably.</p>
+					</section>
+				</section>
+
+				<section>
+					<h2>Object storage is everywhere</h2>
+					<p class="fragment rollin"><img src="images/dropbox.png"></p>
+					<p class="fragment rollin"><img src="images/googledrive.png"></p>
+					<p class="fragment rollin"><img src="images/onedrive.png"></p>
+					<p class="fragment rollin"><img src="images/hubic.png"></p>
+					<p class="fragment rollin"><img src="images/s3.png"></p>
+					<p class="fragment rollin"><small>etc..</small></p>
+				</section>
+
+				<section>
+					<section>
+						<h2>Use cases for Object storage</h2>
+						<p class="fragment rollin"><img src="images/goodcheapfast.png"></p>
+					</section>
+					<section>
+						<h2>Use cases for Object storage</h2>
+						<img src="images/spaceperformanceprice.png">
+					</section>
+					<section>
+						<h3>Object Storage != CDN</h3>
+					</section>
+					<section>
+						<h2>Use cases for Object storage</h2>
+						<p>Any storage that isn't latency or performance sensitive:</p>
+						<ul>
+							<li>Backups</li>
+							<li>Static files</li>
+							<li>Distributed computing (ex: hadoop)</li>
+						</ul>
+					</section>
+				</section>
+
+				<section>
+					<section>
+						<h1>Backups</h1>
+					</section>
+					<section>
+						<h2>Duplicity</h2>
+						<p>
+							Duplicity is an utility that compresses and backups your files.<br><br>
+							It encrypts them locally and allows you to upload them away using as little bandwidth as possible using the rsync algorithm.
+						</p>
+					</section>
+				</section>
+
+				<section>
+					<section>
+						<h2>Installing Duplicity</h2>
+						<p>
+							Ubuntu 14.04 "Trusty"
+							<pre><code class="nohighlight">$ apt-get -y install duplicity</code></pre>
+						</p>
+						<p>
+							Ubuntu 12.04 "Precise"
+							<pre><code class="nohighlight"># Otherwise duplicity isn't recent enough for Swift backend
+$ add-apt-repository ppa:duplicity-team/ppa
+$ apt-get update && apt-get -y install duplicity</code></pre>
+						</p>
+					</section>
+					<section>
+						<h2>Keystone client</h2>
+						<small>(For Openstack Keystone-backed authentication)</small>
+						<p>
+							<pre><code class="nohighlight">$ apt-get install python-keystoneclient</code></pre>
+						</p>
+					</section>
+				</section>
+
+				<section>
+						<h2>Duplicity and encryption</h2>
+						<p>Duplicity can encrypt your data locally with a secret key before uploading it.</p>
+						<br>
+						<p>To generate your password-protected secret encryption key:</p>
+						<pre><code>$ gpg --gen-key</code></pre>
+						<br>
+						<p>To read your data you need:</p>
+						<ol>
+							<li>Your secret key</li>
+							<li>Your secret key password</li>
+						</ol>
+				</section>
+
+				<section>
+					<section>
+						<h2>Using Duplicity with Swift</h2>
+					</section>
+					<section>
+						<h3>Provide your Swift credentials to Duplicity</h3>
+						<pre><code>#!/bin/bash
+# Swift credentials
+export SWIFT_USERNAME=tenant:username
+export SWIFT_PASSWORD=password
+export SWIFT_AUTHURL=https://keystone_auth_host/v2.0
+export SWIFT_AUTHVERSION=2
+
+# Optional, your gpg passphrase passed from Duplicity to gpg
+# Otherwise Duplicity will request the passphrase from stdin.
+# export PASSPHRASE=password</code></pre>
+					</section>
+					<section>
+						<h3>Path to backup and upload destination</h3>
+						<pre><code>$ duplicity &lt;dir&gt; swift://&lt;container&gt;</code></pre>
+					</section>
+					<section>
+						<p>That's it ?</p>
+					</section>
+				</section>
+
+				<section>
+					<section>
+						<h2>Uploading backups</h2>
+						<small>Sending /root to the root_backup container</small>
+						<pre style="font-size:38%;"><code>$ duplicity /root swift://root_backup
+
+Local and Remote metadata are synchronized, no sync needed.
+Last full backup date: none
+GnuPG passphrase:
+Retype passphrase to confirm:
+No signatures found, switching to full backup.
+--------------[ Backup Statistics ]--------------
+StartTime 1407817325.28 (Tue Aug 12 00:22:05 2014)
+EndTime 1407817326.27 (Tue Aug 12 00:22:06 2014)
+ElapsedTime 0.99 (0.99 seconds)
+SourceFiles 244
+SourceFileSize 11097577 (10.6 MB)
+NewFiles 244
+NewFileSize 11097577 (10.6 MB)
+DeletedFiles 0
+ChangedFiles 0
+ChangedFileSize 0 (0 bytes)
+ChangedDeltaSize 0 (0 bytes)
+DeltaEntries 244
+RawDeltaSize 10913257 (10.4 MB)
+TotalDestinationSizeChange 8555954 (8.16 MB)
+Errors 0
+-------------------------------------------------</code></pre>
+					</section>
+					<section>
+						<h2>Uploading backups</h2>
+						<small>Sending /root to the root_backup container (again)</small>
+						<pre style="font-size:38%;"><code>$ duplicity /root swift://root_backup
+
+Local and Remote metadata are synchronized, no sync needed.
+Last full backup date: Tue Aug 12 00:21:55 2014
+GnuPG passphrase:
+Retype passphrase to confirm:
+--------------[ Backup Statistics ]--------------
+StartTime 1407817392.57 (Tue Aug 12 00:23:12 2014)
+EndTime 1407817392.68 (Tue Aug 12 00:23:12 2014)
+ElapsedTime 0.11 (0.11 seconds)
+SourceFiles 246
+SourceFileSize 11272304 (10.8 MB)
+NewFiles 10
+NewFileSize 198608 (194 KB)
+DeletedFiles 5
+ChangedFiles 4
+ChangedFileSize 26672 (26.0 KB)
+ChangedDeltaSize 0 (0 bytes)
+DeltaEntries 19
+RawDeltaSize 184262 (180 KB)
+TotalDestinationSizeChange 182580 (178 KB)
+Errors 0
+-------------------------------------------------</code></pre>
+					</section>
+					<section>
+						<h2>What it looks like on Swift</h2>
+						<pre style="font-size:42%;"><code>$ swift list --lh root_backup
+
+175K 2014-08-12 04:22:07 duplicity-full-signatures.20140812T042155Z.sigtar.gpg
+ 196 2014-08-12 04:22:08 duplicity-full.20140812T042155Z.manifest.gpg
+8.2M 2014-08-12 04:22:07 duplicity-full.20140812T042155Z.vol1.difftar.gpg
+ 248 2014-08-12 04:23:13 duplicity-inc.20140812T042155Z.to.20140812T042304Z.manifest.gpg
+178K 2014-08-12 04:23:12 duplicity-inc.20140812T042155Z.to.20140812T042304Z.vol1.difftar.gpg
+5.8K 2014-08-12 04:23:13 duplicity-new-signatures.20140812T042155Z.to.20140812T042304Z.sigtar.gpg
+8.5M</code></pre>
+					</section>
+				</section>
+
+				<section>
+					<section>
+						<h2>Restoring backups</h2>
+						<p>The most recent backup</p>
+						<pre style="font-size:44%;"><code>$ duplicity --file-to-restore importantfile.sql swift://root_backup /root/importantfile.sql</code></pre>
+					</section>
+					<section>
+						<h2>Restoring backups</h2>
+						<p>An older backup</p>
+						<pre style="font-size:44%;"><code>$ duplicity -t 3D --file-to-restore importantfile.sql swift://root_backup /root/importantfile.sql</code></pre>
+					</section>
+				</section>
+
+				<section>
+					<section>
+						<h2>Other use cases</h2>
+						<p class"fragment rollin">Duplicity and other tools have actual Swift integration.</p>
+						<p class"fragment rollin">What about applications and tools that don't ?</p>
+					</section>
+					<section>
+						<p>What if you could get anything, any software you want on Swift ?</p>
+						<p>Abstract object storage into a filesystem in userspace ?</p>
+					</section>
+					<section>
+						<p>Am I crazy ? Is this real life ?</p>
+					</section>
+				</section>
+
+				<section>
+					<section>
+						<small>Introducing...</small>
+						<h1>S3QL</h1>
+						<p>A filesystem over HTTP with Openstack Swift</p>
+					</section>
+					<section>
+						<h2>S3QL</h2>
+						<blockquote style="font-size:60%;">S3QL is a file system that stores all its data online using storage services like Google Storage, Amazon S3, or OpenStack. S3QL effectively provides a hard disk of dynamic, infinite capacity that can be accessed from any computer with internet access running Linux, FreeBSD or OS-X.
+							S3QL is a standard conforming, full featured UNIX file system that is conceptually indistinguishable from any local file system. Furthermore, S3QL has additional features like compression, encryption, data de-duplication, immutable trees and snapshotting which make it especially suitable for online backup and archival.</blockquote>
+					</section>
+				</section>
+
+				<section>
+					<h2>Installing S3QL</h2>
+					<pre><code>$ add-apt-repository ppa:nikratio/s3ql
+$ apt-get update && apt-get -y install s3ql</code></pre>
+				</section>
+
+				<section>
+					<section>
+						<h2>Setting up S3QL</h2>
+						<p>Swift credentials</p>
+						<pre><code>$ mkdir ~/.s3ql
+$ touch ~/.s3ql/authinfo2 && chmod 0600 ~/.s3ql/authinfo2</code></pre>
+						<small>~/.s3ql/authinfo2:</small>
+						<pre><code>[swift]
+backend-login: tenant:username
+backend-password: password
+storage-url: swiftks://keystone.example.org/&lt;region&gt;:&lt;container&gt;</code></pre>
+					</section>
+					<section>
+						<h2>Setting up S3QL</h2>
+						<p>Create your s3ql container with python-swiftclient</p>
+						<small>(s3ql doesn't do this for you)</small>
+						<pre><code>$ swift post s3ql</code></pre>
+					</section>
+					<section>
+						<h2>Setting up S3QL</h2>
+						<p>Initialize the filesystem</p>
+						<pre style="font-size:50%;"><code>$ mkfs.s3ql swiftks://keystone.example.org/region:s3ql
+Before using S3QL, make sure to read the user's guide, especially
+the 'Important Rules to Avoid Loosing Data' section.
+Enter encryption password:
+Confirm encryption password:
+Generating random encryption key...
+Creating metadata tables...
+Dumping metadata...
+..objects..
+..blocks..
+..inodes..
+..inode_blocks..
+..symlink_targets..
+..names..
+..contents..
+..ext_attributes..
+Compressing and uploading metadata...
+Wrote 155 bytes of compressed metadata.
+</code></pre>
+					</section>
+				</section>
+
+				<section>
+					<h2>What it looks like</h2>
+					<pre style="font-size:40%;"><code>$ swift list s3ql
+s3ql_metadata
+s3ql_passphrase
+s3ql_passphrase_bak1
+s3ql_passphrase_bak2
+s3ql_passphrase_bak3
+s3ql_seq_no_1
+
+$ swift stat s3ql
+       Account: AUTH_e8217e83ef32427bb4e4d217f1390ab4
+     Container: s3ql
+       Objects: 6
+         Bytes: 791
+      Read ACL:
+     Write ACL:
+       Sync To:
+      Sync Key:
+ Accept-Ranges: bytes
+        Server: nginx
+    Connection: keep-alive
+   X-Timestamp: 1412040138.20837
+    X-Trans-Id: txddafca8cbda244f5b5f1e-00542a0944
+  Content-Type: text/plain; charset=utf-8</code></pre>
+				</section>
+
+				<section>
+					<section>
+						<h2>Trying it out</h2>
+						<p>Mount the filesystem</p>
+						<pre><code>$ mkdir /mnt/s3ql
+$ mount.s3ql swiftks://keystone.example.org/region:s3ql /mnt/s3ql/
+Using 4 upload threads.
+Autodetected 4052 file descriptors available for cache entries
+Enter file system encryption passphrase:
+Using cached metadata.
+Setting cache size to 37584 MB
+Mounting filesystem...</code></pre>
+					</section>
+					<section>
+						<h2>Trying it out</h2>
+						<p>Does this thing work ?</p>
+						<pre style="font-size:50%;"><code>$ df -h
+Filesystem                                  Size  Used Avail Use% Mounted on
+/dev/vda1                                    50G  1.1G   46G   3% /
+none                                        4.0K     0  4.0K   0% /sys/fs/cgroup
+udev                                        991M   12K  991M   1% /dev
+tmpfs                                       201M  352K  200M   1% /run
+none                                        5.0M     0  5.0M   0% /run/lock
+none                                       1001M     0 1001M   0% /run/shm
+none                                        100M     0  100M   0% /run/user
+swiftks://keystone.example.org/region:s3ql  1.0T     0  1.0T   0% /mnt/s3ql
+
+$ ls -al /mnt/s3ql/
+total 0
+drwx------ 1 root root 0 Sep 29 21:32 lost+found</code></pre>
+					</section>
+				</section>
+
+				<section>
+					<section>
+						<h3>Using the filesystem</h3>
+						<pre><code>$ dd if=/dev/zero of=/mnt/s3ql/bigfile.bin bs=1024k count=1024
+1024+0 records in
+1024+0 records out
+1073741824 bytes (1.1 GB) copied, 80.1757 s, 13.4 MB/s</code></pre>
+						<small>(Speed here being limited by bandwidth)</small>
+					</section>
+					<section>
+						<h3>Looking at the result</h3>
+						<pre><code>$ swift list s3ql --lh
+1.7K 2014-09-30 01:47:25 s3ql_data_1
+ 792 2014-09-30 01:48:45 s3ql_data_2
+ 155 2014-09-30 01:32:34 s3ql_metadata
+ 132 2014-09-30 01:32:34 s3ql_passphrase
+ 132 2014-09-30 01:32:34 s3ql_passphrase_bak1
+ 132 2014-09-30 01:32:34 s3ql_passphrase_bak2
+ 132 2014-09-30 01:32:34 s3ql_passphrase_bak3
+ 108 2014-09-30 01:32:35 s3ql_seq_no_1
+ 108 2014-09-30 01:39:42 s3ql_seq_no_2
+3.3K</code></pre>
+						Where's my 1 GB file ?
+					</section>
+					<section>
+						<h3>Looking at the result</h3>
+						<pre><code>$ ls -alh /mnt/s3ql/
+total 1.0G
+-rw-r--r-- 1 root root 1.0G Sep 29 21:48 bigfile.bin
+drwx------ 1 root root    0 Sep 29 21:32 lost+found</code></pre>
+					...?
+					</section>
+					<section>
+						<p>S3QL provides compression and deduplication out of the box.</p>
+						<p>Lots of zeroes compresses pretty well.</p>
+					</section>
+				</section>
+
+				<section>
+					<h2>Going full circle</h2>
+					<p>Yeah, you could do that as well...</p>
+					<pre><code>$ mkdir /mnt/s3ql/root_backup
+duplicity /root file:///mnt/s3ql/root_backup</code></pre>
+					<small>Sky (cloud!) is the limit.</small>
+				</section>
+
+				<section>
+					<p>As the price of disk space, bandwidth and connection speed decreases, the benefit and interest of using solutions
+					like Duplicity and S3QL increases.</p>
+				</section>
+
+				<section>
+					<h2>Thank you !</h2>
+					<h3>Have any questions ?</h3>
+					<p>Follow me</p>
+					<ul>
+						<li>Blog: <a href="https://dmsimard.com" target="_blank">https://dmsimard.com</a></li>
+						<li>Twitter: <a href="https://twitter.com/dmsimard" target="_blank">@dmsimard</a></li>
+					</ul>
+					<br><br>
+					<p>Follow iWeb and Internap</p>
+					<ul>
+						<li><a href="http://iweb.com" target="_blank">http://iweb.com</a> and <a href="https://twitter.com/iweb" target="_blank">@iWeb</a></li>
+						<li><a href="http://internap.com" target="_blank">http://internap.com</a> and <a href="https://twitter.com/internap" target="_blank">@internap</a></li>
+					</ul>
+					<br><br>
+					<img class="logo" src="images/openstack_mtl_logo.png" alt="Openstack Montreal Logo" id="openstack_mtl_logo">
+					<img class="logo" src="images/iweblogo.png" alt="iWeb Logo" id="iweb_logo">
+				</section>
+			</div>
+		</div>
+
+		<script src="lib/js/head.min.js"></script>
+		<script src="js/reveal.min.js"></script>
+
+		<script>
+
+			// Full list of configuration options available here:
+			// https://github.com/hakimel/reveal.js#configuration
+			Reveal.initialize({
+				controls: true,
+				progress: true,
+				history: true,
+				center: true,
+
+				theme: Reveal.getQueryHash().theme, // available themes are in /css/theme
+				transition: Reveal.getQueryHash().transition || 'default', // default/cube/page/concave/zoom/linear/fade/none
+
+				// Parallax scrolling
+				// parallaxBackgroundImage: 'https://s3.amazonaws.com/hakim-static/reveal-js/reveal-parallax-1.jpg',
+				// parallaxBackgroundSize: '2100px 900px',
+
+				// Optional libraries used to extend on reveal.js
+				dependencies: [
+					{ src: 'lib/js/classList.js', condition: function() { return !document.body.classList; } },
+					{ src: 'plugin/markdown/marked.js', condition: function() { return !!document.querySelector( '[data-markdown]' ); } },
+					{ src: 'plugin/markdown/markdown.js', condition: function() { return !!document.querySelector( '[data-markdown]' ); } },
+					<!--{ src: 'plugin/highlight/highlight.js', async: true, callback: function() { hljs.initHighlightingOnLoad(); } },-->
+					{ src: 'plugin/zoom-js/zoom.js', async: true, condition: function() { return !!document.body.classList; } },
+					{ src: 'plugin/notes/notes.js', async: true, condition: function() { return !!document.body.classList; } }
+				]
+			});
+
+		</script>
+
+	</body>
+</html>
