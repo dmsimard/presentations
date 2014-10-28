@@ -108,14 +108,11 @@
 						<img src="images/spaceperformanceprice.png">
 					</section>
 					<section>
-						<h3>Object Storage != CDN</h3>
-					</section>
-					<section>
 						<h2>Use cases for Object storage</h2>
 						<p>Any storage that isn't latency or performance sensitive:</p>
 						<ul>
 							<li>Backups</li>
-							<li>Static files</li>
+							<li>Static files (<i>Object storage != CDN</i>)</li>
 							<li>Distributed computing (ex: hadoop)</li>
 						</ul>
 					</section>
@@ -139,20 +136,20 @@
 						<h2>Installing Duplicity</h2>
 						<p>
 							Ubuntu 14.04 "Trusty"
-							<pre><code class="nohighlight">$ apt-get -y install duplicity</code></pre>
+							<pre><code class="nohighlight">$ sudo apt-get -y install duplicity</code></pre>
 						</p>
 						<p>
 							Ubuntu 12.04 "Precise"
 							<pre><code class="nohighlight"># Otherwise duplicity isn't recent enough for Swift backend
-$ add-apt-repository ppa:duplicity-team/ppa
-$ apt-get update && apt-get -y install duplicity</code></pre>
+$ sudo add-apt-repository ppa:duplicity-team/ppa
+$ sudo apt-get update && sudo apt-get -y install duplicity</code></pre>
 						</p>
 					</section>
 					<section>
 						<h2>Keystone client</h2>
 						<small>(For Openstack Keystone-backed authentication)</small>
 						<p>
-							<pre><code class="nohighlight">$ apt-get install python-keystoneclient</code></pre>
+							<pre><code class="nohighlight">$ sudo apt-get install python-keystoneclient</code></pre>
 						</p>
 					</section>
 				</section>
@@ -189,11 +186,8 @@ export SWIFT_AUTHVERSION=2
 # export PASSPHRASE=password</code></pre>
 					</section>
 					<section>
-						<h3>Path to backup and upload destination</h3>
-						<pre><code>$ duplicity &lt;dir&gt; swift://&lt;container&gt;</code></pre>
-					</section>
-					<section>
-						<p>That's it ?</p>
+						<h4>Provide folder to backup and upload destination to duplicity</h4>
+						<pre><code>$ duplicity &lt;folder&gt; swift://&lt;container&gt;</code></pre>
 					</section>
 				</section>
 
@@ -281,18 +275,9 @@ Errors 0
 				</section>
 
 				<section>
-					<section>
-						<h2>Other use cases</h2>
-						<p class"fragment rollin">Duplicity and other tools have actual Swift integration.</p>
-						<p class"fragment rollin">What about applications and tools that don't ?</p>
-					</section>
-					<section>
-						<p>What if you could get anything, any software you want on Swift ?</p>
-						<p>Abstract object storage into a filesystem in userspace ?</p>
-					</section>
-					<section>
-						<p>Am I crazy ? Is this real life ?</p>
-					</section>
+					<h2>Other use cases</h2>
+					<p class"fragment rollin">Duplicity and other tools have actual Swift integration.</p>
+					<p class"fragment rollin">What about applications and tools that don't ?</p>
 				</section>
 
 				<section>
@@ -303,15 +288,22 @@ Errors 0
 					</section>
 					<section>
 						<h2>S3QL</h2>
-						<blockquote style="font-size:60%;">S3QL is a file system that stores all its data online using storage services like Google Storage, Amazon S3, or OpenStack. S3QL effectively provides a hard disk of dynamic, infinite capacity that can be accessed from any computer with internet access running Linux, FreeBSD or OS-X.
-							S3QL is a standard conforming, full featured UNIX file system that is conceptually indistinguishable from any local file system. Furthermore, S3QL has additional features like compression, encryption, data de-duplication, immutable trees and snapshotting which make it especially suitable for online backup and archival.</blockquote>
+						<blockquote style="font-size:60%;">S3QL is a file system that stores all its data online using storage services like Google Storage, Amazon S3, or OpenStack.</blockquote>
+							<ul>
+								<li>Stable, production ready</li>
+								<li>Dynamic, infinite capacity</li>
+								<li>Standard conforming, UNIX file system</li>
+								<li>Compatible with Linux, FreeBSD, OS X</li>
+								<li>Compression, Deduplication, Encryption, Snapshots</li>
+							</ul>
 					</section>
 				</section>
 
 				<section>
 					<h2>Installing S3QL</h2>
-					<pre><code>$ add-apt-repository ppa:nikratio/s3ql
-$ apt-get update && apt-get -y install s3ql</code></pre>
+					<pre><code># Enable universe repository if not already enabled
+$ sudo add-apt-repository universe
+$ sudo apt-get update && sudo apt-get -y install s3ql</code></pre>
 				</section>
 
 				<section>
@@ -337,7 +329,7 @@ storage-url: swiftks://keystone.example.org/&lt;region&gt;:&lt;container&gt;</co
 						<p>Initialize the filesystem</p>
 						<pre style="font-size:50%;"><code>$ mkfs.s3ql swiftks://keystone.example.org/region:s3ql
 Before using S3QL, make sure to read the user's guide, especially
-the 'Important Rules to Avoid Loosing Data' section.
+the 'Important Rules to Avoid Losing Data' section.
 Enter encryption password:
 Confirm encryption password:
 Generating random encryption key...
@@ -352,8 +344,7 @@ Dumping metadata...
 ..contents..
 ..ext_attributes..
 Compressing and uploading metadata...
-Wrote 155 bytes of compressed metadata.
-</code></pre>
+Wrote 155 bytes of compressed metadata.</code></pre>
 					</section>
 				</section>
 
@@ -399,7 +390,7 @@ Mounting filesystem...</code></pre>
 					</section>
 					<section>
 						<h2>Trying it out</h2>
-						<p>Does this thing work ?</p>
+						<p>A filesystem just like any other</p>
 						<pre style="font-size:50%;"><code>$ df -h
 Filesystem                                  Size  Used Avail Use% Mounted on
 /dev/vda1                                    50G  1.1G   46G   3% /
